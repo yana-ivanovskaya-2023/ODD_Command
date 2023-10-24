@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient_2"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:paddingHorizontal="16dp"
+    android:paddingTop="16dp"
     android:paddingBottom="40dp">
 
     <ImageView
@@ -17,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/md_theme_light_onPrimaryContainer" />
+        app:tint="@color/md_theme_onPrimaryContainer" />
 
     <ImageView
         android:id="@+id/buttonColorWheel"
@@ -29,16 +31,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view" />
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/buttonMarkerSelection"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/buttonMarker"
+        app:layout_constraintEnd_toEndOf="@id/buttonMarker"
+        app:layout_constraintStart_toStartOf="@id/buttonMarker"
+        app:layout_constraintTop_toTopOf="@id/buttonMarker"
+        app:shapeAppearance="@style/RoundImageView"
+        tools:background="#567900" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonMarker"
         style="@style/Widget.Material3.Button.IconButton.Filled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="20dp"
         app:icon="@drawable/ic_marker"
         app:layout_constraintBottom_toBottomOf="@id/buttonColorWheel"
         app:layout_constraintStart_toEndOf="@id/buttonColorWheel"
         app:layout_constraintTop_toTopOf="@id/buttonColorWheel" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/buttonPenSelection"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/buttonPen"
+        app:layout_constraintEnd_toEndOf="@id/buttonPen"
+        app:layout_constraintStart_toStartOf="@id/buttonPen"
+        app:layout_constraintTop_toTopOf="@id/buttonPen"
+        app:shapeAppearance="@style/RoundImageView"
+        tools:background="#522900" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonPen"
@@ -56,7 +80,7 @@
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:text="@string/action_save_to_gallery"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

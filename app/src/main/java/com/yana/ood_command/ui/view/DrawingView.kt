@@ -1,9 +1,10 @@
-package com.yana.ood_command
+package com.yana.ood_command.ui.view
 
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.yana.ood_command.IDrawingTouchController
 
 class DrawingView @JvmOverloads constructor(
     context: Context,
@@ -22,8 +23,7 @@ class DrawingView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         mDrawingTouchController?.apply {
-            getCurrentCommand()?.execute(canvas)
-            drawingHistory.executeCommands(canvas)
+            getCommands().forEach { it.execute(canvas) }
         }
     }
 

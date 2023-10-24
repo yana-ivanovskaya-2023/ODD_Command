@@ -12,22 +12,13 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <FrameLayout
-            android:id="@+id/topPanel"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:background="@color/md_theme_light_onPrimaryContainer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <FrameLayout
             android:id="@+id/topGradient"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/background_gradient"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topPanel" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/buttonUndo"
@@ -41,28 +32,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/topGradient"
-            app:layout_constraintVertical_bias="0" />
+            app:layout_constraintTop_toTopOf="@id/topGradient" />
 
         <ImageView
             android:id="@+id/bitmap"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topPanel"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.2"
             tools:src="@tools:sample/avatars" />
 
-        <com.yana.ood_command.DrawingView
+        <com.yana.ood_command.ui.view.DrawingView
             android:id="@+id/drawingView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
             app:layout_constraintBottom_toBottomOf="@id/bitmap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topGradient" />
+            app:layout_constraintTop_toTopOf="@id/bitmap" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -70,6 +65,7 @@
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="16dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <include
@@ -78,15 +74,31 @@
 
     </FrameLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/emptyScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#678908"
+        android:background="@color/md_theme_onPrimaryContainer"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="100dp"
+        tools:visibility="gone">
 
-        <include layout="@layout/lay_color_picker_dialog" />
-    </FrameLayout>
+        <ImageView
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:src="@drawable/color_palette" />
+
+        <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Выбрать фотографию" />
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

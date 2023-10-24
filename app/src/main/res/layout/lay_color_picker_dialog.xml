@@ -3,23 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:paddingTop="16dp">
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/selectedColor"
-        android:layout_width="50dp"
+        android:layout_width="220dp"
         android:layout_height="50dp"
-        android:translationY="-16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/RoundImageView"
-        tools:background="@color/md_theme_dark_inversePrimary" />
+        tools:cardBackgroundColor="@color/md_theme_dark_inversePrimary" />
 
-    <com.yana.ood_command.ColorWheelView
+    <com.yana.ood_command.ui.view.ColorWheelView
         android:id="@+id/colorWheel"
         android:layout_width="220dp"
         android:layout_height="220dp"
+        android:layout_marginTop="16dp"
         android:src="@drawable/color_wheel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

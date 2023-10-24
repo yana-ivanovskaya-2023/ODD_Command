@@ -2,7 +2,6 @@ package com.yana.ood_command.command
 
 import android.graphics.Canvas
 
-interface IDrawingCommand {
+interface ICommand {
     fun execute(canvas: Canvas)
-    fun reset()
 }
