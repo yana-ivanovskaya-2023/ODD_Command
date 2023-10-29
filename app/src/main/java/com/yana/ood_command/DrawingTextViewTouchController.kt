@@ -1,21 +1,25 @@
 package com.yana.ood_command
 
+import android.content.Context
 import android.graphics.PointF
 import android.graphics.Rect
+import android.view.GestureDetector
+import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import com.yana.ood_command.command.ICommand
 import com.yana.ood_command.command.MoveTextBlockCommand
 import com.yana.ood_command.command.ScaleAndRotateTextBlockCommand
-import com.yana.ood_command.ui.view.IEditableView
+import com.yana.ood_command.ui.IEditableView
 import kotlin.math.abs
 import kotlin.math.atan2
 
 
 class DrawingTextViewTouchController(
+    context: Context,
     private val addCommand: (ICommand) -> Unit,
     private val saveCurrentCommand: (ICommand?) -> Unit
-) : View.OnTouchListener {
+) : View.OnTouchListener, SimpleOnGestureListener() {
 
     private var dX: Float = 0f
     private var dY: Float = 0f
@@ -38,8 +42,23 @@ class DrawingTextViewTouchController(
         NONE
     }
 
+    private val mGestureDetector = GestureDetector(context, this)
+    private var mIsLongPress = false
+
+    override fun onLongPress(e: MotionEvent) {
+        super.onLongPress(e)
+        mIsLongPress = true
+    }
+
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         view.performClick()
+
+        mGestureDetector.onTouchEvent(event)
+
+        if (mIsLongPress) {
+            (view as? IEditableView)?.setEditFocus()
+            mIsLongPress = false
+        }
 
         val canMove = (view as? IEditableView)?.canMove(event) ?: false
 
@@ -66,7 +85,7 @@ class DrawingTextViewTouchController(
                 val factor = view.width.div(
                     view.width + ((view.right + view.translationX - event.rawX) * 2)
                 )
-                val scaleFactor = abs(factor).coerceIn(1f..4f)
+                val scaleFactor = abs(factor).coerceIn(1f..3f)
 
                 view.getGlobalVisibleRect(mRect)
 

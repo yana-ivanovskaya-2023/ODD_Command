@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.core.view.children
 import com.yana.ood_command.command.ICommand
+import com.yana.ood_command.ui.IEditableView
 
 class DrawingView @JvmOverloads constructor(
     context: Context,

@@ -15,6 +15,7 @@ import com.yana.ood_command.DrawingTouchController
 import com.yana.ood_command.R
 import com.yana.ood_command.command.AddPictureCommand
 import com.yana.ood_command.command.AddTextBlockCommand
+import com.yana.ood_command.command.ChangeTextCommand
 import com.yana.ood_command.databinding.ActivityMainBinding
 import com.yana.ood_command.databinding.LayColorPickerDialogBinding
 import com.yana.ood_command.di.getPhotoDrawerViewModel
@@ -92,10 +93,20 @@ class MainActivity : AppCompatActivity() {
                         parentView = { mBinding.drawingView },
                         view = TextBlockView(this@MainActivity).apply {
                             val controller = DrawingTextViewTouchController(
+                                context = this@MainActivity,
                                 addCommand = mViewModel::addCommand,
                                 saveCurrentCommand = mViewModel::saveCurrentCommand
                             )
                             setOnTouchListener(controller)
+                            doOnTextChanged { old, new ->
+                                mViewModel.addCommand(
+                                    ChangeTextCommand(
+                                        text = new,
+                                        prevText = old,
+                                        view = { this }
+                                    )
+                                )
+                            }
                         }
                     )
                 )

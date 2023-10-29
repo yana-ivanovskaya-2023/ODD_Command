@@ -6,19 +6,21 @@ import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.RectF
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.Display.Mode
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.core.graphics.ColorUtils
+import androidx.core.widget.doAfterTextChanged
 import com.yana.ood_command.databinding.LayTextBlockBinding
-
-interface IEditableView {
-    fun canMove(event: MotionEvent): Boolean
-    fun removeFocus()
-}
+import com.yana.ood_command.ui.IEditableView
+import com.yana.ood_command.ui.hideKeyboard
+import com.yana.ood_command.ui.showKeyboard
 
 
 class TextBlockView @JvmOverloads constructor(
@@ -28,7 +30,7 @@ class TextBlockView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyle), IEditableView {
 
     private val mFillTextPaint = Paint().apply {
-        color = Color.parseColor("#C1C7CE")
+        color = ColorUtils.setAlphaComponent(Color.BLACK, 120)
         isAntiAlias = true
         style = Paint.Style.FILL
         strokeWidth = 6f
@@ -63,6 +65,7 @@ class TextBlockView @JvmOverloads constructor(
     private var mMode: Mode = Mode.STATIC
     private var mIsFocused = true
     private val mEditCircleRect = RectF()
+    private var mPrevText = ""
 
     enum class Mode {
         EDIT,
@@ -79,7 +82,12 @@ class TextBlockView @JvmOverloads constructor(
         mBinding.root.apply {
             hint = "Add text..."
             maxWidth = (resources.displayMetrics.widthPixels * 0.8).toInt()
-            inputType = InputType.TYPE_NULL
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    mMode = Mode.STATIC
+                    renderState()
+                }
+            }
         }
     }
 
@@ -89,6 +97,33 @@ class TextBlockView @JvmOverloads constructor(
 
     override fun removeFocus() {
         mIsFocused = false
+        mMode = Mode.STATIC
+        renderState()
+        invalidate()
+    }
+
+    override fun setEditFocus() {
+        mIsFocused = true
+        mMode = Mode.EDIT
+        renderState()
+        invalidate()
+    }
+
+    override fun doOnTextChanged(action: (String, String) -> Unit) {
+        mBinding.root.doAfterTextChanged {
+            if (mPrevText != it.toString()) {
+                action(mPrevText, it.toString())
+            }
+            mPrevText = it.toString()
+        }
+    }
+
+    override fun setText(text: String) {
+        if (mBinding.root.text.toString() == text) return
+
+        mPrevText = text
+        mBinding.root.setText(text)
+        mBinding.root.setSelection(text.length)
     }
 
     override fun onFinishInflate() {
@@ -96,10 +131,32 @@ class TextBlockView @JvmOverloads constructor(
         setWillNotDraw(false)
     }
 
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         mIsFocused = true
+        renderState()
         invalidate()
+
         return mMode == Mode.STATIC
+    }
+
+    private fun renderState() {
+        mBinding.root.apply {
+            inputType = when (mMode) {
+                Mode.EDIT -> InputType.TYPE_CLASS_TEXT
+                Mode.STATIC -> InputType.TYPE_NULL
+            } + InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            when (mMode) {
+                Mode.EDIT -> {
+                    requestFocus()
+                    showKeyboard()
+                }
+
+                Mode.STATIC -> {
+                    clearFocus()
+                    hideKeyboard()
+                }
+            }
+        }
     }
 
     override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
