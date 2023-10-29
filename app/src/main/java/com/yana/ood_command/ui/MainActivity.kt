@@ -10,15 +10,18 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.yana.ood_command.DrawingTextViewTouchController
 import com.yana.ood_command.DrawingTouchController
 import com.yana.ood_command.R
 import com.yana.ood_command.command.AddPictureCommand
+import com.yana.ood_command.command.AddTextBlockCommand
 import com.yana.ood_command.databinding.ActivityMainBinding
 import com.yana.ood_command.databinding.LayColorPickerDialogBinding
 import com.yana.ood_command.di.getPhotoDrawerViewModel
 import com.yana.ood_command.presentation.DrawSettings
 import com.yana.ood_command.presentation.DrawingCommandFactory
 import com.yana.ood_command.presentation.PhotoDrawerState
+import com.yana.ood_command.ui.view.TextBlockView
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -33,6 +36,12 @@ class MainActivity : AppCompatActivity() {
         DrawingTouchController(
             drawingCommandFactory = DrawingCommandFactory { mBinding.drawingView },
             drawSettings = { mViewModel.state.value.drawSettings },
+            addCommand = mViewModel::addCommand,
+            saveCurrentCommand = mViewModel::saveCurrentCommand
+        )
+    }
+    private val mDrawingTextViewTouchController by lazy {
+        DrawingTextViewTouchController(
             addCommand = mViewModel::addCommand,
             saveCurrentCommand = mViewModel::saveCurrentCommand
         )
@@ -83,6 +92,16 @@ class MainActivity : AppCompatActivity() {
             buttonMarker.setOnClickListener { mViewModel.onMarkerClick() }
             buttonPen.setOnClickListener { mViewModel.onPenClick() }
             buttonColorWheel.setOnClickListener { mViewModel.showColorPicker() }
+            buttonText.setOnClickListener {
+                mViewModel.addCommand(
+                    AddTextBlockCommand(
+                        parentView = { mBinding.drawingView },
+                        view = TextBlockView(this@MainActivity).apply {
+                            setOnTouchListener(mDrawingTextViewTouchController)
+                        }
+                    )
+                )
+            }
         }
     }
 

@@ -11,13 +11,19 @@ class DrawingView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr, defStyleRes), IDrawingView {
+) : FrameLayout(
+    context,
+    attrs,
+    defStyleAttr,
+    defStyleRes
+), IDrawingView {
 
     private val mDrawActions = mutableListOf<Canvas.() -> Unit>()
 
     override fun onFinishInflate() {
         super.onFinishInflate()
         setWillNotDraw(false)
+        clipChildren = false
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -32,6 +38,7 @@ class DrawingView @JvmOverloads constructor(
     }
 
     fun update(commands: List<ICommand>) {
+        println("COMMANDS ${commands.map { it::class.simpleName }}")
         mDrawActions.clear()
         commands.forEach { it.execute() }
         invalidate()

@@ -16,9 +16,8 @@ class DrawingTouchController(
 
     private var mPath = Path()
 
-    override fun onTouch(view: View?, event: MotionEvent?): Boolean {
-        event ?: return false
-        view?.performClick()
+    override fun onTouch(view: View, event: MotionEvent): Boolean {
+        view.performClick()
 
         if (event.pointerCount > 1) return false
 
@@ -32,18 +31,15 @@ class DrawingTouchController(
             MotionEvent.ACTION_MOVE -> {
                 mPath.lineTo(event.x, event.y)
                 saveCurrentCommand(drawingCommandFactory.create(drawSettings(), mPath))
-                view?.invalidate()
             }
 
             MotionEvent.ACTION_UP -> {
                 saveCurrentCommand(null)
                 addCommand(drawingCommandFactory.create(drawSettings(), mPath))
-                view?.invalidate()
             }
 
             MotionEvent.ACTION_CANCEL -> {
                 saveCurrentCommand(null)
-                view?.invalidate()
             }
 
             else -> Unit
