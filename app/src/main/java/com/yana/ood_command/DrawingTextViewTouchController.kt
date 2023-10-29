@@ -6,9 +6,10 @@ import android.view.MotionEvent
 import android.view.View
 import com.yana.ood_command.command.ICommand
 import com.yana.ood_command.command.MoveTextBlockCommand
-import com.yana.ood_command.command.ScaleTextBlockCommand
+import com.yana.ood_command.command.ScaleAndRotateTextBlockCommand
 import com.yana.ood_command.ui.view.IEditableView
 import kotlin.math.abs
+import kotlin.math.atan2
 
 
 class DrawingTextViewTouchController(
@@ -20,10 +21,16 @@ class DrawingTextViewTouchController(
     private var dY: Float = 0f
 
     private val mPrevPoint = PointF()
+
     private var mPrevScale = 1f
     private var mCurrentScale = 1f
 
+    private var mPrevRotation = 0f
+    private var mCurrentRotation = 0f
+
     private var mCurrentAction = Action.NONE
+
+    private val mRect = Rect()
 
     enum class Action {
         SCALE_ROTATE,
@@ -52,6 +59,7 @@ class DrawingTextViewTouchController(
                 dY = view.y - event.rawY
 
                 mPrevScale = view.scaleX
+                mPrevRotation = view.rotation
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -60,11 +68,29 @@ class DrawingTextViewTouchController(
                 )
                 val scaleFactor = abs(factor).coerceIn(1f..4f)
 
+                view.getGlobalVisibleRect(mRect)
+
+                val viewX = mRect.centerX()
+                val viewY = mRect.centerY()
+                val eventX = event.rawX
+                val eventY = event.rawY
+
+                val degrees = Math.toDegrees(
+                    atan2(
+                        (eventY - viewY).toDouble(),
+                        (eventX - viewX).toDouble()
+                    )
+                ).toFloat()
+
                 mCurrentScale = scaleFactor
+                mCurrentRotation = degrees
+
                 saveCurrentCommand(
-                    ScaleTextBlockCommand(
+                    ScaleAndRotateTextBlockCommand(
                         targetScale = mCurrentScale,
                         prevScale = mPrevScale,
+                        targetRotation = mCurrentRotation,
+                        prevRotation = mPrevRotation,
                         textView = { view }
                     )
                 )
@@ -74,9 +100,11 @@ class DrawingTextViewTouchController(
                 mCurrentAction = Action.NONE
                 saveCurrentCommand(null)
                 addCommand(
-                    ScaleTextBlockCommand(
+                    ScaleAndRotateTextBlockCommand(
                         targetScale = mCurrentScale,
                         prevScale = mPrevScale,
+                        targetRotation = mCurrentRotation,
+                        prevRotation = mPrevRotation,
                         textView = { view }
                     )
                 )

@@ -3,9 +3,11 @@ package com.yana.ood_command.command
 import android.view.View
 
 
-class ScaleTextBlockCommand(
+class ScaleAndRotateTextBlockCommand(
     private val targetScale: Float,
     private val prevScale: Float,
+    private val targetRotation: Float,
+    private val prevRotation: Float,
     private val textView: () -> View
 ) : ICommand {
 
@@ -13,6 +15,7 @@ class ScaleTextBlockCommand(
         textView().animate()
             .scaleX(targetScale)
             .scaleY(targetScale)
+            .rotation(targetRotation)
             .setDuration(0)
             .start()
     }
@@ -21,6 +24,7 @@ class ScaleTextBlockCommand(
         textView().animate()
             .scaleX(prevScale)
             .scaleY(prevScale)
+            .rotation(prevRotation)
             .setDuration(0)
             .start()
     }
