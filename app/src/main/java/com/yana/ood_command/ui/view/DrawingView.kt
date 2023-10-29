@@ -4,16 +4,16 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.yana.ood_command.IDrawingTouchController
+import com.yana.ood_command.command.ICommand
 
 class DrawingView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
+) : FrameLayout(context, attrs, defStyleAttr, defStyleRes), IDrawingView {
 
-    private var mDrawingTouchController: IDrawingTouchController? = null
+    private val mDrawActions = mutableListOf<Canvas.() -> Unit>()
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -22,14 +22,19 @@ class DrawingView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        mDrawingTouchController?.apply {
-            getCommands().forEach { it.execute(canvas) }
+        mDrawActions.forEach { draw ->
+            canvas.draw()
         }
     }
 
-    fun setTouchController(controller: IDrawingTouchController) {
-        mDrawingTouchController = controller
-        setOnTouchListener(controller)
+    override fun draw(action: Canvas.() -> Unit) {
+        mDrawActions.add(action)
+    }
+
+    fun update(commands: List<ICommand>) {
+        mDrawActions.clear()
+        commands.forEach { it.execute() }
+        invalidate()
     }
 
 }

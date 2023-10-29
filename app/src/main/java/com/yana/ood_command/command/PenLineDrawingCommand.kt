@@ -3,11 +3,13 @@ package com.yana.ood_command.command
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import com.yana.ood_command.ui.view.IDrawingView
 
 class PenLineDrawingCommand(
     private val path: Path,
     private val color: Int,
-    private val width: Int
+    private val width: Int,
+    private val view: IDrawingView
 ) : ICommand {
 
     private val mPaint = Paint().apply {
@@ -19,8 +21,14 @@ class PenLineDrawingCommand(
         isAntiAlias = true
     }
 
-    override fun execute(canvas: Canvas) {
-        canvas.drawPath(path, mPaint)
+    override fun execute() {
+        view.draw {
+            drawPath(path, mPaint)
+        }
+    }
+
+    override fun reset() {
+
     }
 
 }

@@ -11,6 +11,16 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+        <com.yana.ood_command.ui.view.DrawingView
+            android:id="@+id/drawingView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="80dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/topGradient" />
+
         <FrameLayout
             android:id="@+id/topGradient"
             android:layout_width="0dp"
@@ -33,31 +43,6 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/topGradient" />
-
-        <ImageView
-            android:id="@+id/bitmap"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleX="0.9"
-            android:scaleY="0.9"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.2"
-            tools:src="@tools:sample/avatars" />
-
-        <com.yana.ood_command.ui.view.DrawingView
-            android:id="@+id/drawingView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleX="0.9"
-            android:scaleY="0.9"
-            app:layout_constraintBottom_toBottomOf="@id/bitmap"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bitmap" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

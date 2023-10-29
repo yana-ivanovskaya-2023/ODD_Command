@@ -1,12 +1,8 @@
 package com.yana.ood_command.ui
 
-import android.net.Uri
 import android.os.Bundle
-import android.util.Size
-import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -14,15 +10,16 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.yana.ood_command.presentation.DrawingHistory
 import com.yana.ood_command.DrawingTouchController
 import com.yana.ood_command.R
+import com.yana.ood_command.command.AddPictureCommand
 import com.yana.ood_command.databinding.ActivityMainBinding
 import com.yana.ood_command.databinding.LayColorPickerDialogBinding
+import com.yana.ood_command.di.getPhotoDrawerViewModel
 import com.yana.ood_command.presentation.DrawSettings
 import com.yana.ood_command.presentation.DrawingCommandFactory
 import com.yana.ood_command.presentation.PhotoDrawerState
-import com.yana.ood_command.presentation.PhotoDrawerViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -31,21 +28,25 @@ import kotlin.properties.Delegates
 class MainActivity : AppCompatActivity() {
 
     private var mBinding: ActivityMainBinding by Delegates.notNull()
-    private val mViewModel by viewModels<PhotoDrawerViewModel> {
-        defaultViewModelProviderFactory
-    }
-
-    private val mDrawingHistory = DrawingHistory()
+    private val mViewModel by getPhotoDrawerViewModel()
     private val mDrawingTouchController by lazy {
         DrawingTouchController(
-            drawingHistory = mDrawingHistory,
-            drawingCommandFactory = DrawingCommandFactory(),
-            drawSettings = { mViewModel.state.value.drawSettings }
+            drawingCommandFactory = DrawingCommandFactory { mBinding.drawingView },
+            drawSettings = { mViewModel.state.value.drawSettings },
+            addCommand = mViewModel::addCommand,
+            saveCurrentCommand = mViewModel::saveCurrentCommand
         )
     }
     private val mPickMediaLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            updateImage(uri)
+            mViewModel.addCommand(
+                AddPictureCommand(
+                    uri ?: return@registerForActivityResult,
+                    resources,
+                    contentResolver,
+                    mBinding.drawingView
+                )
+            )
         }
     private var mColorPickerDialog: AlertDialog? = null
 
@@ -68,9 +69,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initWidgets() = with(mBinding) {
-        drawingView.setTouchController(mDrawingTouchController)
+        drawingView.setOnTouchListener(mDrawingTouchController)
         buttonUndo.setOnClickListener {
-            mDrawingHistory.removeLast()
+            mViewModel.undo()
             drawingView.invalidate()
         }
         buttonStart.setOnClickListener {
@@ -97,6 +98,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun subscribeOnViewModel() {
         mViewModel.state.onEach(::render).launchIn(lifecycleScope)
+        mViewModel.commands
+            .distinctUntilChanged()
+            .onEach {
+                mBinding.drawingView.update(it)
+            }.launchIn(lifecycleScope)
 
         mViewModel.state.map { it.isColorPickerVisible }
             .onEach {
@@ -159,16 +165,6 @@ class MainActivity : AppCompatActivity() {
                 mViewModel.closeColorPicker()
             }
             .show()
-    }
-
-    private fun updateImage(uri: Uri?) {
-        uri ?: return
-
-        val dm = resources.displayMetrics
-        val bitmap = contentResolver
-            .loadThumbnail(uri, Size(dm.widthPixels, dm.heightPixels), null)
-        mBinding.bitmap.setImageBitmap(bitmap)
-        mViewModel.onPhotoSelected()
     }
 
 }
