@@ -17,6 +17,7 @@ import com.yana.ood_command.databinding.LayTextBlockBinding
 
 interface IEditableView {
     fun canMove(event: MotionEvent): Boolean
+    fun removeFocus()
 }
 
 
@@ -52,7 +53,7 @@ class TextBlockView @JvmOverloads constructor(
     }
 
     private val mEditCirclePaintFill = Paint().apply {
-        color = Color.RED // Color.parseColor("#001E2E")
+        color = Color.parseColor("#001E2E")
         isAntiAlias = true
         style = Paint.Style.FILL
     }
@@ -86,12 +87,18 @@ class TextBlockView @JvmOverloads constructor(
         return mIsFocused && !mEditCircleRect.contains(event.x, event.y)
     }
 
+    override fun removeFocus() {
+        mIsFocused = false
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         setWillNotDraw(false)
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        mIsFocused = true
+        invalidate()
         return mMode == Mode.STATIC
     }
 
@@ -106,9 +113,10 @@ class TextBlockView @JvmOverloads constructor(
             mFillTextPaint
         )
 
-        if (mIsFocused) {
-
+        if (!mIsFocused) {
+            return super.drawChild(canvas, child, drawingTime)
         }
+
         canvas.drawRoundRect(
             child.left.toFloat() - STROKE_MARGIN,
             child.top.toFloat() - STROKE_MARGIN,
@@ -129,22 +137,18 @@ class TextBlockView @JvmOverloads constructor(
         mEditCircleRect.right = right
         mEditCircleRect.left = left
 
-
-        canvas.drawRect(mEditCircleRect, mEditCirclePaintFill)
-
-
-//        canvas.drawCircle(
-//            child.right.toFloat() + STROKE_MARGIN,
-//            child.top.toFloat() - STROKE_MARGIN,
-//            EDIT_CIRCLE_RADIUS,
-//            mEditCirclePaintFill
-//        )
-//        canvas.drawCircle(
-//            child.right.toFloat() + STROKE_MARGIN,
-//            child.top.toFloat() - STROKE_MARGIN,
-//            EDIT_CIRCLE_RADIUS,
-//            mEditCirclePaintStroke
-//        )
+        canvas.drawCircle(
+            child.right.toFloat() + STROKE_MARGIN,
+            child.top.toFloat() - STROKE_MARGIN,
+            EDIT_CIRCLE_RADIUS,
+            mEditCirclePaintFill
+        )
+        canvas.drawCircle(
+            child.right.toFloat() + STROKE_MARGIN,
+            child.top.toFloat() - STROKE_MARGIN,
+            EDIT_CIRCLE_RADIUS,
+            mEditCirclePaintStroke
+        )
 
         return super.drawChild(canvas, child, drawingTime)
     }

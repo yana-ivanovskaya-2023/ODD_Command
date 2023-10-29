@@ -81,14 +81,6 @@ class PhotoDrawerViewModel() : ViewModel() {
         }
     }
 
-    fun onSaveClick() {
-
-    }
-
-    fun onBack() {
-
-    }
-
     private fun <T> MutableStateFlow<T>.modify(modifier: T.() -> T) {
         this.value = this.value.modifier()
     }

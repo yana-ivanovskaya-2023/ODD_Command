@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import androidx.core.view.children
 import com.yana.ood_command.command.ICommand
 
 class DrawingView @JvmOverloads constructor(
@@ -23,6 +24,12 @@ class DrawingView @JvmOverloads constructor(
     override fun onFinishInflate() {
         super.onFinishInflate()
         setWillNotDraw(false)
+        setOnClickListener {
+            children.forEach {
+                (it as? IEditableView)?.removeFocus()
+                it.invalidate()
+            }
+        }
         clipChildren = false
     }
 
