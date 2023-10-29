@@ -40,12 +40,6 @@ class MainActivity : AppCompatActivity() {
             saveCurrentCommand = mViewModel::saveCurrentCommand
         )
     }
-    private val mDrawingTextViewTouchController by lazy {
-        DrawingTextViewTouchController(
-            addCommand = mViewModel::addCommand,
-            saveCurrentCommand = mViewModel::saveCurrentCommand
-        )
-    }
     private val mPickMediaLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             mViewModel.addCommand(
@@ -97,7 +91,11 @@ class MainActivity : AppCompatActivity() {
                     AddTextBlockCommand(
                         parentView = { mBinding.drawingView },
                         view = TextBlockView(this@MainActivity).apply {
-                            setOnTouchListener(mDrawingTextViewTouchController)
+                            val controller = DrawingTextViewTouchController(
+                                addCommand = mViewModel::addCommand,
+                                saveCurrentCommand = mViewModel::saveCurrentCommand
+                            )
+                            setOnTouchListener(controller)
                         }
                     )
                 )
