@@ -3,6 +3,7 @@ package com.yana.ood_command.command
 import android.content.ContentResolver
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.net.Uri
 import android.util.Size
 import com.yana.ood_command.ui.view.IDrawingView
@@ -25,7 +26,10 @@ data class AddPictureCommand(
     override fun execute() {
         val bitmap = mBitmap ?: return
         view.draw {
-            drawBitmap(bitmap, 0f, 0f, null)
+            val scale = resources.displayMetrics.widthPixels / bitmap.width.toFloat()
+            val matrix = Matrix()
+            matrix.setScale(scale, scale)
+            drawBitmap(bitmap, matrix, null)
         }
     }
 
