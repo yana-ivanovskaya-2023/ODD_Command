@@ -1,11 +1,17 @@
 package com.yana.ood_command.ui
 
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.net.toUri
+import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -27,7 +33,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.properties.Delegates
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -111,6 +120,22 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             }
+            buttonSave.setOnClickListener { saveToGallery() }
+        }
+    }
+
+    private fun saveToGallery() {
+        val bitmap = mBinding.drawingView.drawToBitmap()
+        val root = Environment
+            .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+
+        val name = "Image-${System.currentTimeMillis()}.jpg"
+        val file = File(root, name)
+
+        if (file.exists()) file.delete()
+
+        FileOutputStream(file).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, out)
         }
     }
 
